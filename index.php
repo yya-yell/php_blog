@@ -4,6 +4,21 @@ require_once("config/config.php");
 if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header("location:login.php");
 }
+if(empty($_GET['pageno'])) {
+  $pageno = 1;
+} else {
+  $pageno = $_GET['pageno'];
+}
+$numOfrec = 6;
+$offset = ($pageno - 1 ) * $numOfrec;
+$rec = $pdo->prepare("SELECT * FROM post");
+$rec->execute();
+$totrec = $rec->fetchAll();
+$totalpage = ceil(count($totrec)/$numOfrec);
+$stat = $pdo->prepare("SELECT * FROM post LIMIT $offset , $numOfrec");
+$stat->execute();
+$result = $stat->fetchAll();
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -36,11 +51,6 @@ if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
         </div>
       </div><!-- /.container-fluid -->
     </section>
-<?php
-  $statement = $pdo->prepare("SELECT * FROM `post` ORDER BY `id` DESC");
-  $statement->execute();
-  $result = $statement->fetchAll();
-?>
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
@@ -74,6 +84,21 @@ if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
       </div><!-- /.container-fluid -->
     </section>
     <!-- /.content -->
+    <!-- pagination -->
+    <div class="container">
+          <ul class="pagination justify-content-center">
+            <li class="page-item"><a href="?pageno=1" class="page-link">First</a></li>
+            <li class="page-item <?php if($pageno <= 1){echo "disabled";} ?>">
+              <a href="<?php if($pageno <= 1){echo "disabled";}else{echo "?pageno=".($pageno-1);}?>" class="page-link">Previous</a>
+            </li>
+            <li class="page-item"><a href="" class="page-link"><?php echo $pageno;?></a></li>
+            <li class="page-item <?php if($pageno >= $totalpage){echo "disabled" ;} ?>">
+              <a href="<?php if($pageno>= $totalpage){echo 'disabled';}else{echo '?pageno='.($pageno+1);}?>" class="page-link">Next</a>
+            </li>
+            <li class="page-item"><a href="?pageno=<?php echo $totalpage ?>" class="page-link">Last</a></li>
+            </ul>
+    </div>
+     <!-- / pagination -->
     <!--scroll to top -->
     <a id="back-to-top" href="#" class="btn btn-primary back-to-top" role="button" aria-label="Scroll to top">
       <i class="fas fa-chevron-up"></i>
@@ -82,12 +107,12 @@ if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   <footer>
     <div class="container-fluid text-secondary mb-5">
       <div class="float-right d-none d-sm-block">
-        <b>Version</b> 3.0.5
+      <a href="logout.php" class="btn btn-danger btn-md">Logout</a>
       </div>
       <strong>Copyright &copy; 2014-2019 <a href="">yellyint48@gmail.com</a>.</strong> All rights
       reserved.
     </div>
-  </footer>
+  </footer> 
   <!-- /.control-sidebar -->
 </div>
 

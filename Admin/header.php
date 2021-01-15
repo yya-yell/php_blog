@@ -29,9 +29,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
         <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
       </li>
     </ul>
-
+<?php
+    $page = $_SERVER['PHP_SELF'];
+    $page_link = explode('/' , $page);
+    $page_link = end($page_link);
+?>
     <!-- SEARCH FORM -->
-    <form class="form-inline ml-3" action="index.php" method="post">
+    <form class="form-inline ml-3" 
+    action="<?php echo $page_link == 'index.php' ? 'index.php' : 'user_mana.php' ?>" method="post">
       <div class="input-group input-group-sm">
         <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" name="search">
         <div class="input-group-append">
@@ -59,7 +64,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <!-- Sidebar user panel (optional) -->
       <div class="user-panel mt-3 pb-3 mb-3 d-flex">
         <div class="info">
-          <a href="#" class="d-block"><?php echo $_SESSION['username']; ?></a>
+          <a href="#" class="d-block"><?php echo ucfirst($_SESSION['username']); ?></a>
         </div>
       </div>
 
@@ -73,6 +78,14 @@ scratch. This page gets rid of all links and provides the needed markup only.
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Blogs
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="user_mana.php" class="nav-link">
+              <i class="nav-icon fas fa-user"></i>
+              <p>
+                User Maganement
               </p>
             </a>
           </li>

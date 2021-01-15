@@ -13,6 +13,7 @@ if($_POST) {
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['name'];
             $_SESSION['logged_in'] = time();
+            $_SESSION['role'] = 0;
             header("location:index.php");
         }
         echo "<script>alert('Invalid Credentials');window.location.href='index.php';</script>";

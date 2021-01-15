@@ -1,8 +1,37 @@
 <?php
-session_start();
 require_once("config/config.php");
+session_start();
 if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header("location:login.php");
+}
+if($_GET['id']){
+  $statement = $pdo->prepare("SELECT * FROM `post` WHERE id=" . $_GET['id']);
+  $statement->execute();
+  $post = $statement->fetchAll();
+}
+
+$blogid = $_GET['id'];
+$comment_statement = $pdo->prepare("SELECT * FROM `comments` WHERE `post_id`=$blogid");
+$comment_statement->execute();
+$comment_res = $comment_statement->fetchall();
+$user_comment = [];
+if($comment_res) {
+ foreach($comment_res as $key=>$value) {
+  $author_id = $comment_res[$key]['author_id'];
+  $user_com = $pdo->prepare("SELECT * FROM `users` WHERE `id`=$author_id");
+  $user_com->execute();
+  $user_comment[] = $user_com->fetchAll();
+ }
+}
+if ($_POST) {
+  $comments = $_POST['comments'];
+  $statement = $pdo->prepare("INSERT INTO `comments` (`content` , `author_id` , `post_id`) VALUES 
+  (:content, :author_id, :post_id)");
+  $p_comment = $statement->execute(
+    array(':content'=>$comments,':author_id'=>$_SESSION['user_id'],':post_id'=>$blogid));
+  if ($p_comment) {
+    header('location: blogdetail.php?id='.$blogid);
+  }  
 }
 ?>
 <!DOCTYPE html>
@@ -24,22 +53,15 @@ if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
 </head>
 <body class="hold-transition sidebar-mini">
 <div class="container mt-4">
-<?php
-if($_GET['id']){
-  $statement = $pdo->prepare("SELECT * FROM `post` WHERE id=" . $_GET['id']);
-  $statement->execute();
-  $post = $statement->fetchAll();
-}
-?>
     <!-- Main content -->
     <section class="content">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-12">
-          <?php 
-            if ($post) {
-              foreach($post as $result){
-          ?>
+            <?php 
+              if ($post) {
+                foreach($post as $result){
+            ?>
             <!-- Box Comment -->
             <div class="card card-widget">
               <div class="card-header">
@@ -49,54 +71,37 @@ if($_GET['id']){
               <div class="card-body">
                 <img class="img-fluid pad mx-auto d-block" src="Admin/images/<?php echo $result['image'];?>" alt="Photo">
                 <p class="mt-5"><?php echo $result['content'];?></p>
-          <?php
-              }
-            }
-          ?>
-                <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i> Share</button>
-                <button type="button" class="btn btn-default btn-sm"><i class="far fa-thumbs-up"></i> Like</button>
-                <span class="float-right text-muted">127 likes - 3 comments</span>
+                <?php
+                    }
+                  }
+                ?>
+                <h3>Comments</h3>
+                <a href="index.php" class="btn btn-success">Go Back</a>
               </div>
               <!-- /.card-body -->
               <div class="card-footer card-comments">
+                <?php if($comment_res) { ?>
+                <?php foreach($comment_res as $key=>$value){ ?>
                 <div class="card-comment">
-                  <!-- User image -->
-                  <img class="img-circle img-sm" src="../dist/img/user3-128x128.jpg" alt="User Image">
-
-                  <div class="comment-text">
+                  <div class="comment-text" style="margin-left : 0px !important;">
                     <span class="username">
-                      Maria Gonzales
-                      <span class="text-muted float-right">8:03 PM Today</span>
+                    <?php echo $user_comment[$key][0]['name']; ?>
                     </span><!-- /.username -->
-                    It is a long established fact that a reader will be distracted
-                    by the readable content of a page when looking at its layout.
-                  </div>
-                  <!-- /.comment-text -->
+                    <span class="text-muted float-right"><?php echo $value['created_at']; ?></span>
+                    <?php echo $value['content']; ?>
+                    </div>
+                   <!-- /.comment-text -->
                 </div>
-                <!-- /.card-comment -->
-                <div class="card-comment">
-                  <!-- User image -->
-                  <img class="img-circle img-sm" src="../dist/img/user4-128x128.jpg" alt="User Image">
-
-                  <div class="comment-text">
-                    <span class="username">
-                      Luna Stark
-                      <span class="text-muted float-right">8:03 PM Today</span>
-                    </span><!-- /.username -->
-                    It is a long established fact that a reader will be distracted
-                    by the readable content of a page when looking at its layout.
-                  </div>
-                  <!-- /.comment-text -->
-                </div>
-                <!-- /.card-comment -->
-              </div>
+                <!-- /.card-comment -->  
+                <?php } ?>
+                <?php } ?>
+            </div>
               <!-- /.card-footer -->
+                 
               <div class="card-footer">
-                <form action="#" method="post">
-                  <img class="img-fluid img-circle img-sm" src="../dist/img/user4-128x128.jpg" alt="Alt Text">
-                  <!-- .img-push is used to add margin to elements next to floating images -->
+                <form action="" method="post">
                   <div class="img-push">
-                    <input type="text" class="form-control form-control-sm" placeholder="Press enter to post comment">
+                    <input type="text" name="comments" class="form-control form-control-sm" placeholder="Press enter to post comment">
                   </div>
                 </form>
               </div>
@@ -125,7 +130,7 @@ if($_GET['id']){
   <footer>
     <div class="container mb-5 mt-3">
       <div class="float-right d-none d-sm-block">
-        <b>Version</b> 3.0.5
+        <a href="logout.php" class="btn btn-danger btn-md">Logout</a>
       </div>
       <strong>Copyright &copy; 2014-2019 <a href="">yellyint48@gmail.com</a>.</strong> All rights
       reserved.
