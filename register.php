@@ -2,9 +2,20 @@
 session_start();
 require_once("config/config.php");
 if($_POST) {
+  if(empty($_POST['name']) || empty($_POST['email']) || empty($_POST['password'])){
+    if(empty($_POST['name'])) {
+      $nameError = "UserName Cannot be blank";
+    }
+    if(empty($_POST['email'])) {
+      $emailError = "email Cannot be blank";
+    }
+    if(strlen($_POST['password'])<5) {
+      $passwordError = "Password should be 5 characters at least";
+    }
+  } else {
     $name = $_POST['name'];
     $email = $_POST['email'];
-    $password = $_POST['password'];
+    $password = password_hash($_POST['password'] , PASSWORD_DEFAULT);
     $statment = $pdo->prepare("SELECT * FROM `users` WHERE `email` = '$email'");
     $statment->execute();
     $user = $statment->fetch(PDO::FETCH_ASSOC);
@@ -24,6 +35,7 @@ if($_POST) {
             echo "<script>alert('Register Success, You can login now.');window.location.href='login.php';</script>";
         }
     }
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -57,24 +69,27 @@ if($_POST) {
       <p class="login-box-msg">Sign in to start your session</p>
 
       <form action="register.php" method="post">
+      <small class="text-danger d-block"><?php echo empty($nameError) ? '': '*'.$nameError; ?></small>
       <div class="input-group mb-3">
-          <input type="text" class="form-control" placeholder="Name" name="name" required>
+          <input type="text" class="form-control <?php echo empty($nameError) ? '' : 'is-invalid'; ?>" placeholder="Name" name="name">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-user"></span>
             </div>
           </div>
         </div>
+        <small class="text-danger d-block"><?php echo empty($emailError) ? '': '*'.$emailError; ?></small>
         <div class="input-group mb-3">
-          <input type="email" class="form-control" placeholder="Email" name="email" required>
+          <input type="email" class="form-control <?php echo empty($emailError) ? '' : 'is-invalid'; ?>" placeholder="Email" name="email">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
             </div>
           </div>
         </div>
+        <small class="text-danger d-block"><?php echo empty($passwordError) ? '': '*'.$passwordError; ?></small>
         <div class="input-group mb-3">
-          <input type="password" class="form-control" placeholder="Password" name="password" required>
+          <input type="password" class="form-control <?php echo empty($passwordError) ? '' : 'is-invalid'; ?>" placeholder="Password" name="password">
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>

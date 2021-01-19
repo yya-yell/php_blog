@@ -9,6 +9,9 @@ if($_GET['id']){
   $statement->execute();
   $post = $statement->fetchAll();
 }
+if($_GET['pageno']) {
+  $pageno = $_GET['pageno'];
+}
 
 $blogid = $_GET['id'];
 $comment_statement = $pdo->prepare("SELECT * FROM `comments` WHERE `post_id`=$blogid");
@@ -24,14 +27,18 @@ if($comment_res) {
  }
 }
 if ($_POST) {
-  $comments = $_POST['comments'];
-  $statement = $pdo->prepare("INSERT INTO `comments` (`content` , `author_id` , `post_id`) VALUES 
-  (:content, :author_id, :post_id)");
-  $p_comment = $statement->execute(
-    array(':content'=>$comments,':author_id'=>$_SESSION['user_id'],':post_id'=>$blogid));
-  if ($p_comment) {
-    header('location: blogdetail.php?id='.$blogid);
-  }  
+  if(empty($_POST['comments'])){
+    $comment_err = "You did not write anything";
+  } else {
+      $comments = $_POST['comments'];
+    $statement = $pdo->prepare("INSERT INTO `comments` (`content` , `author_id` , `post_id`) VALUES 
+    (:content, :author_id, :post_id)");
+    $p_comment = $statement->execute(
+      array(':content'=>$comments,':author_id'=>$_SESSION['user_id'],':post_id'=>$blogid));
+    if ($p_comment) {
+      header('location: blogdetail.php?id=' . $blogid. '&&pageno=' . $pageno);
+    }  
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -76,7 +83,7 @@ if ($_POST) {
                   }
                 ?>
                 <h3>Comments</h3>
-                <a href="index.php" class="btn btn-success">Go Back</a>
+                <a href="<?php echo $_SESSION['role']== 1 ? "Admin/index.php" : "index.php?pageno=".$pageno; ?>" class="btn btn-success">Go Back</a>
               </div>
               <!-- /.card-body -->
               <div class="card-footer card-comments">
@@ -102,6 +109,7 @@ if ($_POST) {
                 <form action="" method="post">
                   <div class="img-push">
                     <input type="text" name="comments" class="form-control form-control-sm" placeholder="Press enter to post comment">
+                    <small class="text-warning"><?=empty($comment_err) ? '' : '*'.$comment_err; ?></small>
                   </div>
                 </form>
               </div>
@@ -121,11 +129,6 @@ if ($_POST) {
     </a>
   </div>
   <!-- /.content-wrapper -->
-
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-  </aside>
 
   <footer>
     <div class="container mb-5 mt-3">

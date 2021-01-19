@@ -2,21 +2,30 @@
 session_start();
 require_once("config/config.php");
 if($_POST) {
-    $email = $_POST['email'];
-    $password = $_POST['password'];
-    $statement = $pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
-    $statement->bindValue(":email" , $email);
-    $statement->execute();
-    $user = $statement->fetch(PDO::FETCH_ASSOC);
-    if($user) {
-        if($user['password'] == $password) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['name'];
-            $_SESSION['logged_in'] = time();
-            $_SESSION['role'] = 0;
-            header("location:index.php");
-        }
-        echo "<script>alert('Invalid Credentials');window.location.href='index.php';</script>";
+    if(empty($_POST['email']) || empty($_POST['password'])){
+      if(empty($_POST['email'])){
+        $emailErr = "Email cannot be blank";
+      }
+      if(empty($_POST['password'])){
+        $passwordErr = "Password cannot be blank";
+      }
+    }else{
+      $email = $_POST['email'];
+      $password = $_POST['password'];
+      $statement = $pdo->prepare("SELECT * FROM `users` WHERE `email`=:email");
+      $statement->bindValue(":email" , $email);
+      $statement->execute();
+      $user = $statement->fetch(PDO::FETCH_ASSOC);
+      if($user) {
+          if(password_verify($password , $user['password'])) {
+              $_SESSION['user_id'] = $user['id'];
+              $_SESSION['username'] = $user['name'];
+              $_SESSION['logged_in'] = time();
+              $_SESSION['role'] = 0;
+              header("location:index.php");
+          }
+          echo "<script>alert('Invalid Credentials');window.location.href='index.php';</script>";
+      }
     }
 }
 ?>
@@ -51,6 +60,7 @@ if($_POST) {
       <p class="login-box-msg">Sign in to start your session</p>
 
       <form action="login.php" method="post">
+        <small class="text-danger d-block"><?php echo empty($emailErr) ? '': '*'.$emailErr; ?></small>
         <div class="input-group mb-3">
           <input type="email" class="form-control" placeholder="Email" name="email">
           <div class="input-group-append">
@@ -59,6 +69,7 @@ if($_POST) {
             </div>
           </div>
         </div>
+        <small class="text-danger d-block"><?php echo empty($passwordErr) ? '': '*'.$passwordErr; ?></small>
         <div class="input-group mb-3">
           <input type="password" class="form-control" placeholder="Password" name="password">
           <div class="input-group-append">

@@ -20,7 +20,7 @@ if(empty($_GET['pageno'])){
 }else {
   $pageno = $_GET['pageno'];
 }
-$numOfrec = 2;
+$numOfrec = 4;
 $offset = ($pageno - 1) * $numOfrec;
 
 if(empty($_POST['search']) && empty($_COOKIE['search'])){

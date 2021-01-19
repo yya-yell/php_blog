@@ -78,7 +78,7 @@ if (empty($_POST['search']) && empty($_COOKIE['search'])) {
                     <tr>
                       <td><?php echo $i; ?></td>
                       <td><?php echo $post['title']; ?></td>
-                      <td><?php echo substr($post['content'] , 0 , 150); ?></td>
+                      <td><a href="../blogdetail.php?id=<?php echo $post['id'];?>" class="text-dark"><?php echo substr($post['content'] , 0 , 150); ?></a></td>
                       <td>
                         <a href="edit.php?id=<?php echo $post['id']; ?>" class="btn btn-warning btn-md mr-3">Edit</a>
                         <a href="delete.php?id=<?php echo $post['id']; ?>" class="btn btn-danger btn-md" 

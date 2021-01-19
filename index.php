@@ -67,8 +67,9 @@ $result = $stat->fetchAll();
               </div>
               <!-- /.card-header -->
               <div class="card-body">
-                <a href="blogdetail.php?id=<?php echo $posts['id']; ?>">
-                <img class="img-fluid pad mx-auto d-block" style="height: 300px; text-align: center;" src="Admin/images/<?php echo $posts['image']; ?>" alt="No photo found">
+                <a href="blogdetail.php?id=<?php echo $posts['id']; ?>&&pageno=<?php echo $pageno; ?>">
+                <img class="img-fluid pad mx-auto d-block" style="height: 300px; text-align: center;" src="Admin/images/<?php echo $posts['image']; ?>" 
+                alt="No photo found">
                 </a>
               </div>
               <!-- /.card-body -->
@@ -104,8 +105,8 @@ $result = $stat->fetchAll();
       <i class="fas fa-chevron-up"></i>
     </a>
     <!-- /. scroll to top -->
-  <footer>
-    <div class="container-fluid text-secondary mb-5">
+  <footer >
+    <div class="container-fluid text-secondary"  style="margin-bottom: 80px;">
       <div class="float-right d-none d-sm-block">
       <a href="logout.php" class="btn btn-danger btn-md">Logout</a>
       </div>

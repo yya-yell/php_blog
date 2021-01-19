@@ -8,30 +8,39 @@ if($_SESSION['role'] != 1){
   header("location: .login.php");
 }
 if ($_POST) {
-    $id = $_POST['id'];
-    $title = $_POST['title'];
-    $content = $_POST['content'];
-    if ($_FILES['file']['name'] != null){
-        $file = "images/". $_FILES['file']['name'];
-        $filetype = pathinfo($file , PATHINFO_EXTENSION);
-        if($filetype != 'jpg' && $filetype != 'png' && $filetype != 'jpeg') {
-            echo "<script>
-                alert('Image must be JPG , PNG or JPEG');
-                window.location.href='index.php';
-                </script>";
-        } else {
-            $image = $_FILES['file']['name'];
-            move_uploaded_file($_FILES['file']['tmp_name'] , $file);         
-            $statement = $pdo->prepare("UPDATE `post` SET `image` = '$image' WHERE id = '$id'");
-            $result = $statement->execute();
+    if(empty($_POST['title'])|| empty($_POST['content'])){
+      if(empty($_POST['title'])) {
+        $titleError = "Title Cannot be blank";
+      }
+      if(empty($_POST['content'])) {
+        $contentError = "Content Cannot be blank";
+      }
+    } else {
+      $id = $_POST['id'];
+      $title = $_POST['title'];
+      $content = $_POST['content'];
+      if ($_FILES['file']['name'] != null){
+          $file = "images/". $_FILES['file']['name'];
+          $filetype = pathinfo($file , PATHINFO_EXTENSION);
+          if($filetype != 'jpg' && $filetype != 'png' && $filetype != 'jpeg') {
+              echo "<script>
+                  alert('Image must be JPG , PNG or JPEG');
+                  window.location.href='index.php';
+                  </script>";
+          } else {
+              $image = $_FILES['file']['name'];
+              move_uploaded_file($_FILES['file']['tmp_name'] , $file);         
+              $statement = $pdo->prepare("UPDATE `post` SET `image` = '$image' WHERE id = '$id'");
+              $result = $statement->execute();
+          }
+      } 
+      $statement = $pdo->prepare("UPDATE `post` SET `title`= '$title' , `content` = '$content' WHERE 
+      id = $id");
+      $result = $statement->execute();
+        if ($result) {
+            echo "<script>alert('Successfully Updated');window.location.href='index.php';</script>";
         }
-    } 
-    $statement = $pdo->prepare("UPDATE `post` SET `title`= '$title' , `content` = '$content' WHERE 
-    id = $id");
-    $result = $statement->execute();
-    if ($result) {
-        echo "<script>alert('Successfully Updated');window.location.href='index.php';</script>";
-    }
+      }
 }
 $statement = $pdo->prepare("SELECT * FROM `post` WHERE id=" . $_GET['id']);
 $statement->execute();
@@ -54,14 +63,14 @@ $post = $statement->fetchAll();
                     <input type="hidden" name="id" value="<?php echo $post[0]['id']; ?>">
                     <div class="form-group">
                         <label for="">Title</label>
+                        <p class="text-danger"><?php echo empty($titleError) ? '' : '*'.$titleError; ?></p>
                         <input type="text" name="title" class="form-control" 
                         value="<?php echo $post[0]['title']; ?>" required>
                     </div>   
                     <div class="form-group">
                         <label for="">Content</label>
-                        <textarea name="content" class="form-control" id="" cols="30" rows="10" required>
-                        <?php echo $post[0]['content']; ?>
-                        </textarea>
+                        <p class="text-danger"><?php echo empty($contentError) ? '' : '*'.$contentError; ?></p>
+                        <textarea name="content" class="form-control" cols="30" rows="10"><?php echo $post[0]['content']; ?></textarea>
                     </div>  
                     <div class="form-group">
                         <label for="">Image</label> <br>
