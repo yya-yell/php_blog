@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once("../config/config.php");
+require_once("../config/common.php");
 if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header("location:login.php");
 }
@@ -60,21 +61,22 @@ $post = $statement->fetchAll();
               <!-- /.card-header -->
               <div class="card-body">
                 <form action="" method="post" enctype="multipart/form-data">
+                  <input name="_token" type="hidden" value="<?php echo empty($_SESSION['_token']) ? '' : $_SESSION['_token']; ?>">
                     <input type="hidden" name="id" value="<?php echo $post[0]['id']; ?>">
                     <div class="form-group">
                         <label for="">Title</label>
                         <p class="text-danger"><?php echo empty($titleError) ? '' : '*'.$titleError; ?></p>
                         <input type="text" name="title" class="form-control" 
-                        value="<?php echo $post[0]['title']; ?>" required>
+                        value="<?php echo escape($post[0]['title']); ?>" required>
                     </div>   
                     <div class="form-group">
                         <label for="">Content</label>
                         <p class="text-danger"><?php echo empty($contentError) ? '' : '*'.$contentError; ?></p>
-                        <textarea name="content" class="form-control" cols="30" rows="10"><?php echo $post[0]['content']; ?></textarea>
+                        <textarea name="content" class="form-control" cols="30" rows="10"><?php echo escape($post[0]['content']); ?></textarea>
                     </div>  
                     <div class="form-group">
                         <label for="">Image</label> <br>
-                        <img src="images/<?php echo $post[0]['image']; ?>" class="w-25 mb-3" alt=""> <br>
+                        <img src="images/<?php echo escape($post[0]['image']); ?>" class="w-25 mb-3" alt=""> <br>
                         <input type="file" name="file">
                     </div>  
                     <input type="submit" class="btn btn-success">    

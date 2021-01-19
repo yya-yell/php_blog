@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once("../config/config.php");
+require_once("../config/common.php");
 if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header("location:login.php");
 }
@@ -82,8 +83,8 @@ include_once('header.php');
                             ?>
                               <tr>
                                   <td><?php echo $i ?></td>
-                                  <td><?php echo $people['name']; ?></td>
-                                  <td><?php echo $people['email']; ?></td>
+                                  <td><?php echo escape($people['name']); ?></td>
+                                  <td><?php echo escape($people['email']); ?></td>
                                   <td><?php echo $people['role'] == 1 ? "Admin" : "User" ; ?></td>
                                   <td>
                                       <a href="user_edit.php?id=<?php echo $people['id'];?>" class="btn btn-info btn-sm">Edit</a>
@@ -105,7 +106,7 @@ include_once('header.php');
                           Previous
                         </a>
                       </li>
-                      <li class="page-item"> <a href="" class="page-link"><?php echo $pageno; ?></a></li>
+                      <li class="page-item"> <a href="" class="page-link"><?php echo escape($pageno); ?></a></li>
                       <li class="page-item <?php if($pageno >= $totalpage){echo "disabled";} ?>">
                         <a 
                           href="<?php if($pageno >= $totalpage){echo "disabled";}else{echo "?pageno=".($pageno+1);}?>" class="page-link">

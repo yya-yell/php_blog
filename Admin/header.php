@@ -1,8 +1,5 @@
+<?php require_once('../config/common.php');?>
 <!DOCTYPE html>
-<!--
-This is a starter template page. Use this page to start your new project from
-scratch. This page gets rid of all links and provides the needed markup only.
--->
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -37,6 +34,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- SEARCH FORM -->
     <form class="form-inline ml-3" 
     action="<?php echo $page_link == 'index.php' ? 'index.php' : 'user_mana.php' ?>" method="post">
+    <input name="_token" type="hidden" value="<?php echo empty($_SESSION['_token']) ? '' : $_SESSION['_token']; ?>">
       <div class="input-group input-group-sm">
         <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search" name="search">
         <div class="input-group-append">
@@ -74,7 +72,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="index.php" class="nav-link">
+            <a href="/Admin/index.php" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Blogs
@@ -82,7 +80,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
           </li>
           <li class="nav-item">
-            <a href="user_mana.php" class="nav-link">
+            <a href="/Admin/user_mana.php" class="nav-link">
               <i class="nav-icon fas fa-user"></i>
               <p>
                 User Maganement

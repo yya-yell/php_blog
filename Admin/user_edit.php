@@ -1,6 +1,8 @@
 <?php
   session_start();
   require_once("../config/config.php");
+  require_once("../config/common.php");
+
   if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
     header("location:login.php");
   }
@@ -58,15 +60,16 @@
         <div class="row">
           <div class="col-md-12">
             <form action="" method="post">
+                <input name="_token" type="hidden" value="<?php echo empty($_SESSION['_token']) ? '' : $_SESSION['_token']; ?>">
                 <div class="form-group">
                     <label for="">Name</label>
                     <small class="text-danger d-block"><?php echo empty($nameError) ? '': '*'.$nameError; ?></small>
-                    <input type="text" class="form-control <?php echo empty($nameError) ? '' : 'is-invalid'; ?>" name="name" value="<?php echo $stat1_res[0]['name']; ?>">
+                    <input type="text" class="form-control <?php echo empty($nameError) ? '' : 'is-invalid'; ?>" name="name" value="<?php echo escape($stat1_res[0]['name']); ?>">
                 </div>
                 <div class="form-group">
                     <label for="">Email</label>
                     <small class="text-danger d-block"><?php echo empty($emailError) ? '': '*'.$emailError; ?></small>
-                    <input type="email" class="form-control <?php echo empty($emailError) ? '' : 'is-invalid'; ?>" name="email" value="<?php echo $stat1_res[0]['email']; ?>">
+                    <input type="email" class="form-control <?php echo empty($emailError) ? '' : 'is-invalid'; ?>" name="email" value="<?php echo escape($stat1_res[0]['email']); ?>">
                 </div>
                 <div class="form-group">
                     <label for="">Password</label>

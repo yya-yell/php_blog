@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once("../config/config.php");
+require_once("../config/common.php");
 if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header("location:login.php");
 }
@@ -77,11 +78,11 @@ if (empty($_POST['search']) && empty($_COOKIE['search'])) {
                   <tbody>
                     <tr>
                       <td><?php echo $i; ?></td>
-                      <td><?php echo $post['title']; ?></td>
+                      <td><?php echo escape($post['title']); ?></td>
                       <td><a href="../blogdetail.php?id=<?php echo $post['id'];?>" class="text-dark"><?php echo substr($post['content'] , 0 , 150); ?></a></td>
                       <td>
-                        <a href="edit.php?id=<?php echo $post['id']; ?>" class="btn btn-warning btn-md mr-3">Edit</a>
-                        <a href="delete.php?id=<?php echo $post['id']; ?>" class="btn btn-danger btn-md" 
+                        <a href="edit.php?id=<?php echo escape($post['id']); ?>" class="btn btn-warning btn-md mr-3">Edit</a>
+                        <a href="delete.php?id=<?php echo escape($post['id']); ?>" class="btn btn-danger btn-md" 
                         onclick="return confirm('Are you sure to delete this blog?')">Delete</a>
                       </td>
                     </tr>                   
@@ -100,7 +101,7 @@ if (empty($_POST['search']) && empty($_COOKIE['search'])) {
                         Previous
                       </a>
                     </li>
-                    <li class="page-item"><a class="page-link" href=""><?php echo $pageno; ?></a></li>
+                    <li class="page-item"><a class="page-link" href=""><?php echo escape($pageno); ?></a></li>
                     <li class="page-item <?php if($pageno >= $totalpage){echo "disabled";} ?>">
                       <a class="page-link" 
                         href="<?php if($pageno >= $totalpage){echo "disabled";}else{echo "?pageno=".($pageno+1);} ?>">

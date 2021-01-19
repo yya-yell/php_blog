@@ -1,6 +1,7 @@
 <?php
-require_once("config/config.php");
 session_start();
+require_once("config/config.php");
+require_once("config/common.php");
 if(empty($_SESSION['user_id']) && empty($_SESSION['logged_in'])) {
   header("location:login.php");
 }
@@ -9,7 +10,7 @@ if($_GET['id']){
   $statement->execute();
   $post = $statement->fetchAll();
 }
-if($_GET['pageno']) {
+if(!empty($_GET['pageno'])) {
   $pageno = $_GET['pageno'];
 }
 
@@ -17,7 +18,7 @@ $blogid = $_GET['id'];
 $comment_statement = $pdo->prepare("SELECT * FROM `comments` WHERE `post_id`=$blogid");
 $comment_statement->execute();
 $comment_res = $comment_statement->fetchall();
-$user_comment = [];
+// $user_comment = [];
 if($comment_res) {
  foreach($comment_res as $key=>$value) {
   $author_id = $comment_res[$key]['author_id'];
@@ -72,12 +73,12 @@ if ($_POST) {
             <!-- Box Comment -->
             <div class="card card-widget">
               <div class="card-header">
-                <h3 class="text-center text-primary"><?php echo $result['title']; ?></h3>
+                <h3 class="text-center text-primary"><?php echo escape($result['title']); ?></h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
                 <img class="img-fluid pad mx-auto d-block" src="Admin/images/<?php echo $result['image'];?>" alt="Photo">
-                <p class="mt-5"><?php echo $result['content'];?></p>
+                <p class="mt-5"><?php echo escape($result['content']);?></p>
                 <?php
                     }
                   }
@@ -107,6 +108,7 @@ if ($_POST) {
                  
               <div class="card-footer">
                 <form action="" method="post">
+                <input name="_token" type="hidden" value="<?php echo empty($_SESSION['_token']) ? '' : $_SESSION['_token']; ?>">
                   <div class="img-push">
                     <input type="text" name="comments" class="form-control form-control-sm" placeholder="Press enter to post comment">
                     <small class="text-warning"><?=empty($comment_err) ? '' : '*'.$comment_err; ?></small>
